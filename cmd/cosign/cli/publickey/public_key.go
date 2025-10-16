@@ -35,9 +35,10 @@ type NamedWriter struct {
 }
 
 type Pkopts struct {
-	KeyRef string
-	Sk     bool
-	Slot   string
+	KeyRef    string
+	Sk        bool
+	Slot      string
+	PivSerial uint32
 }
 
 func GetPublicKey(ctx context.Context, opts Pkopts, writer NamedWriter, pf cosign.PassFunc) error {
@@ -54,7 +55,7 @@ func GetPublicKey(ctx context.Context, opts Pkopts, writer NamedWriter, pf cosig
 		}
 		k = s
 	case opts.Sk:
-		sk, err := pivkey.GetKeyWithSlot(opts.Slot)
+		sk, err := pivkey.GetKeyWithSlot(opts.Slot, opts.PivSerial)
 		if err != nil {
 			return fmt.Errorf("opening piv token: %w", err)
 		}

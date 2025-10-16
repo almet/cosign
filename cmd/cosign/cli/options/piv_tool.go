@@ -24,6 +24,7 @@ type PIVToolSetManagementKeyOptions struct {
 	OldKey    string
 	NewKey    string
 	RandomKey bool
+	PivSerial uint32
 }
 
 var _ Interface = (*PIVToolSetManagementKeyOptions)(nil)
@@ -38,12 +39,16 @@ func (o *PIVToolSetManagementKeyOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().BoolVar(&o.RandomKey, "random-management-key", false,
 		"if set to true, generates a new random management key and deletes it after")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
 }
 
 // PIVToolSetPINOptions is the wrapper for `piv-tool set-pin` related options.
 type PIVToolSetPINOptions struct {
-	OldPIN string
-	NewPIN string
+	OldPIN    string
+	NewPIN    string
+	PivSerial uint32
 }
 
 var _ Interface = (*PIVToolSetPINOptions)(nil)
@@ -55,12 +60,16 @@ func (o *PIVToolSetPINOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.NewPIN, "new-pin", "",
 		"new PIN, uses default if empty")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
 }
 
 // PIVToolSetPUKOptions is the wrapper for `piv-tool set-puk` related options.
 type PIVToolSetPUKOptions struct {
-	OldPUK string
-	NewPUK string
+	OldPUK    string
+	NewPUK    string
+	PivSerial uint32
 }
 
 var _ Interface = (*PIVToolSetPUKOptions)(nil)
@@ -72,12 +81,16 @@ func (o *PIVToolSetPUKOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.NewPUK, "new-puk", "",
 		"new PUK, uses default if empty")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
 }
 
 // PIVToolUnblockOptions is the wrapper for `piv-tool unblock` related options.
 type PIVToolUnblockOptions struct {
-	PUK    string
-	NewPIN string
+	PUK       string
+	NewPIN    string
+	PivSerial uint32
 }
 
 var _ Interface = (*PIVToolUnblockOptions)(nil)
@@ -89,12 +102,16 @@ func (o *PIVToolUnblockOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.NewPIN, "new-PIN", "",
 		"new PIN, uses default if empty")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
 }
 
 // PIVToolAttestationOptions is the wrapper for `piv-tool attestation` related options.
 type PIVToolAttestationOptions struct {
-	Output string
-	Slot   string
+	Output    string
+	Slot      string
+	PivSerial uint32
 }
 
 var _ Interface = (*PIVToolAttestationOptions)(nil)
@@ -106,6 +123,9 @@ func (o *PIVToolAttestationOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.Slot, "slot", "",
 		"Slot to use for generated key (authentication|signature|card-authentication|key-management)")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
 }
 
 // PIVToolGenerateKeyOptions is the wrapper for `piv-tool generate-key` related options.
@@ -115,6 +135,7 @@ type PIVToolGenerateKeyOptions struct {
 	Slot          string
 	PINPolicy     string
 	TouchPolicy   string
+	PivSerial     uint32
 }
 
 var _ Interface = (*PIVToolGenerateKeyOptions)(nil)
@@ -135,4 +156,20 @@ func (o *PIVToolGenerateKeyOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.TouchPolicy, "touch-policy", "",
 		"Touch policy for slot (never|always|cached)")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
+}
+
+// PIVToolResetKeyOptions is the wrapper for `piv-tool reset` related options.
+type PIVToolResetKeyOptions struct {
+	PivSerial uint32
+}
+
+var _ Interface = (*PIVToolResetKeyOptions)(nil)
+
+// AddFlags implements Interface
+func (o *PIVToolResetKeyOptions) AddFlags(cmd *cobra.Command) {
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV hardware token to use (required when multiple tokens are present)")
 }

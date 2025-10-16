@@ -540,8 +540,8 @@ func signDigest(ctx context.Context, digest name.Digest, payload []byte, ko opti
 	return ociremote.WriteSignatures(digest.Repository, newSE, walkOpts...)
 }
 
-func signerFromSecurityKey(ctx context.Context, keySlot string) (*SignerVerifier, error) {
-	sk, err := pivkey.GetKeyWithSlot(keySlot)
+func signerFromSecurityKey(ctx context.Context, keySlot string, serialNumber uint32) (*SignerVerifier, error) {
+	sk, err := pivkey.GetKeyWithSlot(keySlot, serialNumber)
 	if err != nil {
 		return nil, err
 	}
@@ -735,7 +735,7 @@ func SignerFromKeyOpts(ctx context.Context, certPath string, certChainPath strin
 	genKey := false
 	switch {
 	case ko.Sk:
-		sv, err = signerFromSecurityKey(ctx, ko.Slot)
+		sv, err = signerFromSecurityKey(ctx, ko.Slot, ko.PivSerial)
 	case ko.KeyRef != "":
 		sv, err = signerFromKeyRef(ctx, certPath, certChainPath, ko.KeyRef, ko.PassFunc, ko.DefaultLoadOptions)
 	default:

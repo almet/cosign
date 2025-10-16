@@ -50,7 +50,7 @@ type Key struct {
 	pin  string
 }
 
-func GetKey() (*Key, error) {
+func GetKey(serialNumber uint32) (*Key, error) {
 	cards, err := piv.Cards()
 	if err != nil {
 		return nil, err
@@ -58,18 +58,56 @@ func GetKey() (*Key, error) {
 	if len(cards) == 0 {
 		return nil, errors.New("no cards found")
 	}
-	if len(cards) > 1 {
-		return nil, fmt.Errorf("found %d cards, please attach only one", len(cards))
+
+	// If no serial number is specified and there's only one card, use it
+	if serialNumber == 0 && len(cards) == 1 {
+		yk, err := piv.Open(cards[0])
+		if err != nil {
+			return nil, err
+		}
+		return &Key{card: yk}, nil
 	}
-	yk, err := piv.Open(cards[0])
+
+	// If multiple cards or serial number specified, find matching card
+	var matchingCard string
+	var availableSerials []uint32
+
+	for _, card := range cards {
+		yk, err := piv.Open(card)
+		if err != nil {
+			continue
+		}
+		serial, err := yk.Serial()
+		yk.Close()
+		if err != nil {
+			continue
+		}
+		availableSerials = append(availableSerials, serial)
+
+		if serialNumber == 0 || serial == serialNumber {
+			if matchingCard != "" {
+				return nil, fmt.Errorf("found %d cards, please specify serial number with --piv-serial. Available serials: %v", len(cards), availableSerials)
+			}
+			matchingCard = card
+		}
+	}
+
+	if matchingCard == "" {
+		if serialNumber != 0 {
+			return nil, fmt.Errorf("no card found with serial number %d. Available serials: %v", serialNumber, availableSerials)
+		}
+		return nil, fmt.Errorf("found %d cards, please specify serial number with --piv-serial. Available serials: %v", len(cards), availableSerials)
+	}
+
+	yk, err := piv.Open(matchingCard)
 	if err != nil {
 		return nil, err
 	}
 	return &Key{card: yk}, nil
 }
 
-func GetKeyWithSlot(slot string) (*Key, error) {
-	card, err := GetKey()
+func GetKeyWithSlot(slot string, serialNumber uint32) (*Key, error) {
+	card, err := GetKey(serialNumber)
 	if err != nil {
 		return nil, fmt.Errorf("open key: %w", err)
 	}

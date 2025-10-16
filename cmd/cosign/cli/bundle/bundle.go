@@ -52,6 +52,7 @@ type CreateCmd struct {
 	SignaturePath        string
 	Sk                   bool
 	Slot                 string
+	PivSerial            uint32
 }
 
 func (c *CreateCmd) Exec(ctx context.Context) (err error) {
@@ -178,7 +179,7 @@ func (c *CreateCmd) Exec(ctx context.Context) (err error) {
 			defer pkcs11Key.Close()
 		}
 	} else if c.Sk {
-		sk, err := pivkey.GetKeyWithSlot(c.Slot)
+		sk, err := pivkey.GetKeyWithSlot(c.Slot, c.PivSerial)
 		if err != nil {
 			return fmt.Errorf("opening piv token: %w", err)
 		}

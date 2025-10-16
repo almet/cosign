@@ -21,8 +21,9 @@ import (
 
 // SecurityKeyOptions is the wrapper for security key related options.
 type SecurityKeyOptions struct {
-	Use  bool
-	Slot string
+	Use       bool
+	Slot      string
+	PivSerial uint32
 }
 
 var _ Interface = (*SecurityKeyOptions)(nil)
@@ -34,4 +35,7 @@ func (o *SecurityKeyOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.Slot, "slot", "",
 		"security key slot to use for generated key (default: signature) (authentication|signature|card-authentication|key-management)")
+
+	cmd.Flags().Uint32Var(&o.PivSerial, "piv-serial", 0,
+		"serial number of PIV token to use (required when multiple tokens are present)")
 }

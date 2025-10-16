@@ -79,9 +79,10 @@ func PublicKey() *cobra.Command {
 				writer.Writer = os.Stdout
 			}
 			pk := publickey.Pkopts{
-				KeyRef: o.Key,
-				Sk:     o.SecurityKey.Use,
-				Slot:   o.SecurityKey.Slot,
+				KeyRef: 	o.Key,
+				Sk:     	o.SecurityKey.Use,
+				Slot:   	o.SecurityKey.Slot,
+				PivSerial:  o.SecurityKey.PivSerial,
 			}
 			return publickey.GetPublicKey(cmd.Context(), pk, writer, generate.GetPass)
 		},

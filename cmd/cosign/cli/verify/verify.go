@@ -73,6 +73,7 @@ type VerifyCommand struct {
 	SCTRef                       string
 	Sk                           bool
 	Slot                         string
+	PivSerial                    uint32
 	Output                       string
 	RekorURL                     string
 	Attachment                   string
@@ -241,7 +242,7 @@ func (c *VerifyCommand) Exec(ctx context.Context, images []string) (err error) {
 			defer pkcs11Key.Close()
 		}
 	case c.Sk:
-		sk, err := pivkey.GetKeyWithSlot(c.Slot)
+		sk, err := pivkey.GetKeyWithSlot(c.Slot, c.PivSerial)
 		if err != nil {
 			return fmt.Errorf("opening piv token: %w", err)
 		}

@@ -30,11 +30,11 @@ type empty struct{} //nolint
 
 type Key struct{}
 
-func GetKey() (*Key, error) {
+func GetKey(serialNumber uint32) (*Key, error) { //nolint: revive
 	return nil, errors.New("unimplemented")
 }
 
-func GetKeyWithSlot(slot string) (*Key, error) { //nolint: revive
+func GetKeyWithSlot(slot string, serialNumber uint32) (*Key, error) { //nolint: revive
 	return nil, errors.New("unimplemented")
 }
 

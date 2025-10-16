@@ -60,7 +60,7 @@ func pivToolSetManagementKey() *cobra.Command {
 		Args:             cobra.ExactArgs(0),
 		PersistentPreRun: options.BindViper,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return pivcli.SetManagementKeyCmd(cmd.Context(), o.OldKey, o.NewKey, o.RandomKey)
+			return pivcli.SetManagementKeyCmd(cmd.Context(), o.OldKey, o.NewKey, o.RandomKey, o.PivSerial)
 		},
 	}
 
@@ -78,7 +78,7 @@ func pivToolSetPIN() *cobra.Command {
 		Args:             cobra.ExactArgs(0),
 		PersistentPreRun: options.BindViper,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return pivcli.SetPinCmd(cmd.Context(), o.OldPIN, o.NewPIN)
+			return pivcli.SetPinCmd(cmd.Context(), o.OldPIN, o.NewPIN, o.PivSerial)
 		},
 	}
 
@@ -95,7 +95,7 @@ func pivToolSetPUK() *cobra.Command {
 		Short: "sets the PUK on a hardware token",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return pivcli.SetPukCmd(cmd.Context(), o.OldPUK, o.NewPUK)
+			return pivcli.SetPukCmd(cmd.Context(), o.OldPUK, o.NewPUK, o.PivSerial)
 		},
 	}
 
@@ -112,7 +112,7 @@ func pivToolUnblock() *cobra.Command {
 		Short: "unblocks the hardware token, sets a new PIN",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return pivcli.UnblockCmd(cmd.Context(), o.PUK, o.NewPIN)
+			return pivcli.UnblockCmd(cmd.Context(), o.PUK, o.NewPIN, o.PivSerial)
 		},
 	}
 
@@ -129,7 +129,7 @@ func pivToolAttestation() *cobra.Command {
 		Short: "attestation contains commands to manage a hardware token",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			a, err := pivcli.AttestationCmd(cmd.Context(), o.Slot)
+			a, err := pivcli.AttestationCmd(cmd.Context(), o.Slot, o.PivSerial)
 			switch o.Output {
 			case "text":
 				a.Output(cmd.OutOrStdout(), cmd.OutOrStderr())
@@ -158,7 +158,7 @@ func pivToolGenerateKey() *cobra.Command {
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return pivcli.GenerateKeyCmd(cmd.Context(), o.ManagementKey, o.RandomKey,
-				o.Slot, o.PINPolicy, o.TouchPolicy)
+				o.Slot, o.PINPolicy, o.TouchPolicy, o.PivSerial)
 		},
 	}
 
@@ -168,14 +168,18 @@ func pivToolGenerateKey() *cobra.Command {
 }
 
 func pivToolResetKey() *cobra.Command {
+	o := &options.PIVToolResetKeyOptions{}
+
 	cmd := &cobra.Command{
 		Use:   "reset",
 		Short: "reset resets the hardware token completely",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return pivcli.ResetKeyCmd(cmd.Context())
+			return pivcli.ResetKeyCmd(cmd.Context(), o.PivSerial)
 		},
 	}
+
+	o.AddFlags(cmd)
 
 	return cmd
 }

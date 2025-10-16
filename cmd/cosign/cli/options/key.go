@@ -24,6 +24,7 @@ import (
 type KeyOpts struct {
 	Sk                   bool
 	Slot                 string
+	PivSerial            uint32
 	KeyRef               string
 	FulcioURL            string
 	RekorURL             string

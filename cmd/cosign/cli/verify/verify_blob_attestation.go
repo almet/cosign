@@ -141,7 +141,7 @@ func (c *VerifyBlobAttestationCommand) Exec(ctx context.Context, artifactPath st
 			defer pkcs11Key.Close()
 		}
 	case c.Sk:
-		sk, err := pivkey.GetKeyWithSlot(c.Slot)
+		sk, err := pivkey.GetKeyWithSlot(c.Slot, c.PivSerial)
 		if err != nil {
 			return fmt.Errorf("opening piv token: %w", err)
 		}

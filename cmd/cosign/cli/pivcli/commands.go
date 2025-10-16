@@ -35,8 +35,8 @@ import (
 	"github.com/sigstore/cosign/v2/pkg/cosign/pivkey"
 )
 
-func SetManagementKeyCmd(_ context.Context, oldKey, newKey string, randomKey bool) error {
-	yk, err := pivkey.GetKey()
+func SetManagementKeyCmd(_ context.Context, oldKey, newKey string, randomKey bool, serialNumber uint32) error {
+	yk, err := pivkey.GetKey(serialNumber)
 	if err != nil {
 		return err
 	}
@@ -67,8 +67,8 @@ func SetManagementKeyCmd(_ context.Context, oldKey, newKey string, randomKey boo
 	return yk.SetManagementKey(*oldBytes, *newBytes)
 }
 
-func SetPukCmd(_ context.Context, oldPuk, newPuk string) error {
-	yk, err := pivkey.GetKey()
+func SetPukCmd(_ context.Context, oldPuk, newPuk string, serialNumber uint32) error {
+	yk, err := pivkey.GetKey(serialNumber)
 	if err != nil {
 		return err
 	}
@@ -85,8 +85,8 @@ func SetPukCmd(_ context.Context, oldPuk, newPuk string) error {
 	return yk.SetPUK(oldPuk, newPuk)
 }
 
-func UnblockCmd(_ context.Context, oldPuk, newPin string) error {
-	yk, err := pivkey.GetKey()
+func UnblockCmd(_ context.Context, oldPuk, newPin string, serialNumber uint32) error {
+	yk, err := pivkey.GetKey(serialNumber)
 	if err != nil {
 		return err
 	}
@@ -103,8 +103,8 @@ func UnblockCmd(_ context.Context, oldPuk, newPin string) error {
 	return yk.Unblock(oldPuk, newPin)
 }
 
-func SetPinCmd(_ context.Context, oldPin, newPin string) error {
-	yk, err := pivkey.GetKey()
+func SetPinCmd(_ context.Context, oldPin, newPin string, serialNumber uint32) error {
+	yk, err := pivkey.GetKey(serialNumber)
 	if err != nil {
 		return err
 	}
@@ -160,8 +160,8 @@ func (a *Attestations) Output(stdout, stderr io.Writer) {
 	fmt.Fprintf(stdout, "  Version: %d.%d.%d\n", a.KeyAttestation.Version.Major, a.KeyAttestation.Version.Minor, a.KeyAttestation.Version.Patch)
 }
 
-func AttestationCmd(_ context.Context, slotArg string) (*Attestations, error) {
-	yk, err := pivkey.GetKeyWithSlot(slotArg)
+func AttestationCmd(_ context.Context, slotArg string, serialNumber uint32) (*Attestations, error) {
+	yk, err := pivkey.GetKeyWithSlot(slotArg, serialNumber)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func toPem(c *x509.Certificate) string {
 	return string(b)
 }
 
-func GenerateKeyCmd(ctx context.Context, managementKey string, randomKey bool, slotArg string, pinPolicyArg string, touchPolicyArg string) error {
+func GenerateKeyCmd(ctx context.Context, managementKey string, randomKey bool, slotArg string, pinPolicyArg string, touchPolicyArg string, serialNumber uint32) error {
 	slot := pivkey.SlotForName(slotArg)
 	if slot == nil {
 		return flag.ErrHelp
@@ -216,7 +216,7 @@ func GenerateKeyCmd(ctx context.Context, managementKey string, randomKey bool, s
 		return flag.ErrHelp
 	}
 
-	yk, err := pivkey.GetKey()
+	yk, err := pivkey.GetKey(serialNumber)
 	if err != nil {
 		return err
 	}
@@ -265,7 +265,7 @@ func GenerateKeyCmd(ctx context.Context, managementKey string, randomKey bool, s
 	fmt.Println(string(pemBytes))
 	yk.Close()
 
-	att, err := AttestationCmd(ctx, slotArg)
+	att, err := AttestationCmd(ctx, slotArg, serialNumber)
 	if err != nil {
 		return err
 	}
@@ -273,8 +273,8 @@ func GenerateKeyCmd(ctx context.Context, managementKey string, randomKey bool, s
 	return nil
 }
 
-func ResetKeyCmd(ctx context.Context) error {
-	yk, err := pivkey.GetKey()
+func ResetKeyCmd(ctx context.Context, serialNumber uint32) error {
+	yk, err := pivkey.GetKey(serialNumber)
 	if err != nil {
 		return err
 	}
