@@ -113,6 +113,9 @@ func GetKeyWithSlot(slot string, serialNumber uint32) (*Key, error) {
 	}
 
 	card.slot = SlotForName(slot)
+	if card.slot == nil {
+		return nil, fmt.Errorf("invalid slot name: %s", slot)
+	}
 
 	return card, nil
 }

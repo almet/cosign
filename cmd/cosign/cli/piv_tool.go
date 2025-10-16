@@ -130,6 +130,9 @@ func pivToolAttestation() *cobra.Command {
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			a, err := pivcli.AttestationCmd(cmd.Context(), o.Slot, o.PivSerial)
+			if err != nil {
+				return err
+			}
 			switch o.Output {
 			case "text":
 				a.Output(cmd.OutOrStdout(), cmd.OutOrStderr())
@@ -140,7 +143,7 @@ func pivToolAttestation() *cobra.Command {
 				}
 				cmd.Println(string(b))
 			}
-			return err
+			return nil
 		},
 	}
 
