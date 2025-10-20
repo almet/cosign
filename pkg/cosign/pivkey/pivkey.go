@@ -29,6 +29,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/go-piv/piv-go/v2/piv"
@@ -55,13 +56,22 @@ func GetKey() (*Key, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(cards) == 0 {
-		return nil, errors.New("no cards found")
+
+	// Filter to only YubiKey cards
+	var yubikeys []string
+	for _, card := range cards {
+		if strings.Contains(strings.ToLower(card), "yubikey") {
+			yubikeys = append(yubikeys, card)
+		}
 	}
-	if len(cards) > 1 {
-		return nil, fmt.Errorf("found %d cards, please attach only one", len(cards))
+
+	if len(yubikeys) == 0 {
+		return nil, errors.New("no yubikeys found")
 	}
-	yk, err := piv.Open(cards[0])
+	if len(yubikeys) > 1 {
+		return nil, fmt.Errorf("found %d yubikeys, please attach only one", len(yubikeys))
+	}
+	yk, err := piv.Open(yubikeys[0])
 	if err != nil {
 		return nil, err
 	}
